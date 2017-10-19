@@ -1,0 +1,293 @@
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+<style>
+	body{
+		background-image: url('bg01.jpeg');
+		background-size:     cover;                      /* <------ */
+		background-repeat:   no-repeat;
+		background-position: center center;
+	}
+	
+	.box{
+		/*** Light Theme ***/
+		/* background: #ECF0F1;
+		color: #2c3e50; */
+		
+		/*** Dark Theme ***/
+		/* background: #2c3e50;
+		color: #ECF0F1; */
+		
+		/*** Paper Theme ***/
+		background-color: #fff; 
+		background-image: 
+			linear-gradient(90deg, transparent 79px, #abced4 79px, #abced4 81px, transparent 81px),
+			linear-gradient(#eee .1em, transparent .1em);
+		background-size: 100% 1.2em;
+		color: #2c3e50;
+		
+		
+		
+		text-align: center;
+		margin: auto;
+		width: 50%;
+		padding: 1em;
+		font-family: 'Raleway', sans-serif;
+		-webkit-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		-moz-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		border-radius: 10px;
+	}
+	
+	ul{
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
+	}
+	
+	ul li {
+		margin: 0;
+	}
+	
+	button{
+		background-color: #2980B9;
+		border: none;
+		color: #ECF0F1;
+		display: inline;
+		height: 50px;
+	}
+	
+	input[type=text]{
+		margin: 0em;
+		background-color: #3498DB;
+		border: none;
+		color: #ECF0F1;
+		height: 50px;
+		display: inline;
+	}
+	
+	.inputGroup {
+		display: inline-block;
+		-webkit-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		-moz-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+	}
+	
+	#fileopen {
+		display: none;
+	}
+	
+	@media print {
+		.box {
+			box-shadow: none;
+			text-align: left;
+		}
+		
+		input, button {
+			display: none;
+		}
+		
+		body {
+			
+		}
+	}
+	
+	.btnOben {
+		box-shadow: none;
+		color: grey;
+		background-color: transparent;
+		padding: 0;
+		margin: 0;
+		position: relative;
+		top: 0;
+		left: 0;
+	}	
+	
+	@media (orientation: portrait) {
+		.box {
+			width: 100%;
+			height: 100%;
+			margin: 0;
+			border-radius: 0px;
+			box-shadow: none !important;
+		}
+		
+		body{
+			padding: 0;
+			margin: 0;
+			font-size: 6vw;
+		}
+		
+		input[type=text], button {
+			font-size: 6vw;
+			
+		}
+	}
+	
+
+	
+	
+</style>
+<script src="https://www.gstatic.com/firebasejs/4.5.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyA3ltDq39Vj-fKocz8SXxctcTM-3JX7O-s",
+    authDomain: "einkaufsliste-48940.firebaseapp.com",
+    databaseURL: "https://einkaufsliste-48940.firebaseio.com",
+    projectId: "einkaufsliste-48940",
+    storageBucket: "einkaufsliste-48940.appspot.com",
+    messagingSenderId: "324720148667"
+  };
+
+  function writeEinkaufsliste(artikelliste) {
+  artikelliste.forEach(function(artikelname){
+	var neuerArtikel = firebase.database().ref("artikel").push();
+	  neuerArtikel.set({
+		artikel: artikelname
+	  });
+	  });
+}
+
+function readEinkaufsliste() {
+	var artikelliste = firebase.database().ref("artikel");
+	return artikelliste.once('value').then(function(snapshot) {
+		var daten = snapshot.val();
+		var keys = Object.keys(daten);
+		keys.forEach(function(key) {
+			var li = document.createElement('li');
+			var artikelname = daten[key].artikel;
+			li.innerText = artikelname;
+			li.onclick = editThis;
+			li.dataset.key = key;
+			ul.insertBefore(li, lastLi);
+		});		
+	});
+}
+</script>
+</head>
+
+<body>
+<div class="box">
+<button class="material-icons btnOben" id="o">cloud_upload</button>
+<button class="material-icons btnOben" id="s">cloud_download</button>
+<h2>Einkaufsliste</h2>
+<ul id="list">
+<li><div class="inputGroup"><input type="text" id="eingabe" autofocus /><button class="material-icons" id="absenden">add_shopping_cart</button></div></li>
+</ul>
+<input id ="fileopen" type="file" />
+</div>
+<script>
+	// document.querySelector("#eingabe").focus();
+	
+	var ul = document.getElementById("list");
+	var alleLi = document.querySelectorAll("#list li:not(:last-of-type)");
+	var lastLi = document.querySelector("li:last-of-type");
+	
+	firebase.initializeApp(config);
+	var database = firebase.database();
+	
+	alleLi.forEach(function(element){
+		element.onclick = editThis;
+	});
+	readEinkaufsliste();
+	
+	// Will remove all falsy values: undefined, null, 0, false, NaN and "" (empty string)
+	function cleanArray(actual) {
+		var newArray = new Array();
+		for (var i = 0; i < actual.length; i++) {
+			if (actual[i]) {
+			newArray.push(actual[i]);
+		}
+		}
+		return newArray;
+	}
+	
+	function editThis() {
+		promptresult = prompt('Bearbeitung: Bitte geben Sie den neuen Text ein; zum entfernen des Punktes einfach leer lassen oder auf "abbrechen" klicken:', this.innerText);
+		if(promptresult == ""){
+			this.parentNode.removeChild(this);
+		}else{
+			this.innerText = promptresult;
+		}
+	}
+	
+	function erstelleEintrag(){
+		var li = document.createElement("li");
+		li.appendChild(document.createTextNode(document.getElementById("eingabe").value));
+		li.onclick = editThis;
+		ul.insertBefore(li, lastLi);
+		document.querySelector("#eingabe").value = "";
+	}
+	
+	function updateDatabase() {
+		var artikelliste = [];
+		var alleLi = document.querySelectorAll("#list li:not(:last-of-type)");
+		alleLi.forEach(function(element){
+			artikelliste.push(element.innerText);
+		});
+		 writeEinkaufsliste(artikelliste);
+	}
+	
+	function saveThis() {
+		var csv = "";
+		// Schleife +"\n"
+		var alleLi = document.querySelectorAll("#list li:not(:last-of-type)");
+		alleLi.forEach(function(element){
+			csv += element.innerText + "\n";
+			
+		});
+		
+		alert(csv);
+		
+		// a erstellen
+		var download = document.createElement("a");
+		download.style.display="none";
+		download.href = "data:text/csv;base64," + btoa(csv);
+		download.download = "einkaufsliste.csv";
+		document.body.appendChild(download);
+		download.click();
+		download.remove();
+		// Attr: href="data:text/csv,"+csv, download="einkaufsliste.csv"
+		// .click()
+	}
+	
+	function openCsv() {
+		var fileInput = document.querySelector("#fileopen");
+		var files = fileInput.files;
+		var file = files[0];
+		var fileReader = new FileReader();
+		fileReader.readAsText(file);
+		fileReader.onload = function(e) {
+			// console.log(e);
+			var csv = e.target.result;
+			var arr = csv.split("\n");
+			arr=cleanArray(arr);
+			console.log(arr);
+			alleLi = document.querySelectorAll("#list li:not(:last-of-type)");
+		alleLi.forEach(function(element){
+			element.parentNode.removeChild(element);
+		});
+		arr.forEach(function(element){
+			var li = document.createElement("li");
+			li.appendChild(document.createTextNode(element));
+			li.onclick = editThis;
+			ul.insertBefore(li, lastLi);
+		})
+		}
+		
+		
+	}
+	
+	document.querySelector("#absenden").onclick = erstelleEintrag;
+	document.querySelector("#eingabe").onchange = erstelleEintrag;
+	document.querySelector("#fileopen").onchange = openCsv;
+	document.querySelector("#o").onclick=function(){
+		document.querySelector("#fileopen").click();
+	}
+	document.querySelector("#s").onclick = saveThis;
+</script>
+</body>
