@@ -58,6 +58,11 @@
 		color: #ECF0F1;
 		display: inline;
 		height: 50px;
+		width: 50px;
+		font-size: 24px;
+		-webkit-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		-moz-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
 	}
 	
 	input[type=text]{
@@ -67,13 +72,19 @@
 		color: #ECF0F1;
 		height: 50px;
 		display: inline;
+		font-size: 24px;
+		-webkit-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		-moz-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		outline: none;
+		padding-left: 1em;
+		vertical-align: top;
 	}
 	
 	.inputGroup {
 		display: inline-block;
-		-webkit-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
-		-moz-box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
-		box-shadow: 7px 10px 12px -1px rgba(0,0,0,0.16);
+		margin-top: 1em;
+		
 	}
 	
 	#fileopen {
@@ -111,6 +122,7 @@
 			width: 100%;
 			height: 100%;
 			margin: 0;
+			padding: 0;
 			border-radius: 0px;
 			box-shadow: none !important;
 		}
@@ -124,6 +136,10 @@
 		input[type=text], button {
 			font-size: 6vw;
 			
+		}
+		
+		.inputGroup{
+			width: 100%;
 		}
 	}
 	
@@ -172,13 +188,13 @@ function readEinkaufsliste() {
 
 <body>
 <div class="box">
-<button class="material-icons btnOben" id="o">cloud_upload</button>
-<button class="material-icons btnOben" id="s">cloud_download</button>
 <h2>Einkaufsliste</h2>
 <ul id="list">
 <li><div class="inputGroup"><input type="text" id="eingabe" autofocus /><button class="material-icons" id="absenden">add_shopping_cart</button></div></li>
 </ul>
 <input id ="fileopen" type="file" />
+<button class="material-icons btnOben" id="o">cloud_upload</button>
+<button class="material-icons btnOben" id="s">cloud_download</button>
 </div>
 <script>
 	// document.querySelector("#eingabe").focus();
@@ -241,7 +257,7 @@ function readEinkaufsliste() {
 			
 		});
 		
-		alert(csv);
+		// alert(csv);
 		
 		// a erstellen
 		var download = document.createElement("a");
